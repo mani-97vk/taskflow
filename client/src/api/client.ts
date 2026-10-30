@@ -1,0 +1,32 @@
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+export const apiClient = axios.create({
+  baseURL: API_URL,
+  withCredentials: true, // Send cookies automatically
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Attach Authorization header if token exists in localStorage as backup
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('taskflow_token');
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Intercept 401 errors
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 && !window.location.pathname.startsWith('/auth')) {
+      // Don't redirect if already on auth pages
+      localStorage.removeItem('taskflow_token');
+    }
+    return Promise.reject(error);
+  }
+);
