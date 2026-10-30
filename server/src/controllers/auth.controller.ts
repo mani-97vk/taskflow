@@ -104,7 +104,7 @@ export async function login(req: Request, res: Response): Promise<void> {
       const displayName =
         namePart
           .split(/[._-]/)
-          .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+          .map((s: string) => s.charAt(0).toUpperCase() + s.slice(1))
           .join(' ') || 'User';
 
       const passwordHash = await hashPassword(password || 'Password123!');
