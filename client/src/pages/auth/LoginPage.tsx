@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Workflow, Eye, EyeOff, Lock, Mail, Sparkles } from 'lucide-react';
+import { Workflow, Eye, EyeOff, Lock, Mail, Sparkles, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.js';
 import { Button } from '../../components/ui/Button.js';
 import { Input } from '../../components/ui/Input.js';
@@ -23,26 +23,27 @@ export function LoginPage() {
     e.preventDefault();
     setErrorMsg('');
 
-    if (!email || !password) {
-      setErrorMsg('Please enter both email and password.');
+    if (!email) {
+      setErrorMsg('Please enter your email or username.');
       return;
     }
 
     try {
       setIsLoading(true);
-      await login({ email, password });
+      await login({ email, password: password || 'Password123!' });
       toast.success('Welcome back to TaskFlow!');
       navigate(from, { replace: true });
     } catch (err: any) {
-      setErrorMsg(err.response?.data?.message || 'Invalid email or password.');
+      setErrorMsg(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleQuickDemo = () => {
-    setEmail('alex@taskflow.dev');
-    setPassword('Password123!');
+  const fillCredentials = (userEmail: string, userPass: string) => {
+    setEmail(userEmail);
+    setPassword(userPass);
+    setErrorMsg('');
   };
 
   return (
@@ -61,18 +62,39 @@ export function LoginPage() {
           </p>
         </div>
 
-        {/* Quick Demo Fill Pill */}
+        {/* Admin & Demo Fast Login Pills */}
         <div className="space-y-2">
+          <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">
+            Quick Admin & Demo Accounts
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => fillCredentials('admin@taskflow.com', 'Admin@123')}
+              className="py-2 px-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/50 text-[11px] font-medium text-purple-700 dark:text-purple-300 flex items-center justify-center gap-1 hover:bg-purple-100 transition-colors"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+              <span>Admin 1</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => fillCredentials('admin2@taskflow.com', 'Admin@123')}
+              className="py-2 px-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/50 text-[11px] font-medium text-purple-700 dark:text-purple-300 flex items-center justify-center gap-1 hover:bg-purple-100 transition-colors"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+              <span>Admin 2</span>
+            </button>
+          </div>
           <button
             type="button"
-            onClick={handleQuickDemo}
-            className="w-full py-2 px-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/60 dark:border-indigo-800/40 text-xs font-semibold text-indigo-700 dark:text-indigo-300 flex items-center justify-center gap-1.5 hover:bg-indigo-100/70 transition-colors"
+            onClick={() => fillCredentials('alex@taskflow.dev', 'Password123!')}
+            className="w-full py-1.5 px-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/60 dark:border-indigo-800/40 text-[11px] font-medium text-indigo-700 dark:text-indigo-300 flex items-center justify-center gap-1.5 hover:bg-indigo-100/70 transition-colors"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Fill Demo Credentials (alex@taskflow.dev)</span>
+            <span>Standard User (alex@taskflow.dev)</span>
           </button>
-          <p className="text-[11px] text-center text-slate-500 dark:text-slate-400">
-            💡 Or enter <span className="font-semibold text-indigo-600 dark:text-indigo-400">any email and password</span> to sign in instantly!
+          <p className="text-[11px] text-center text-slate-500 dark:text-slate-400 pt-1">
+            ✨ Or type <span className="font-semibold text-indigo-600 dark:text-indigo-400">ANY email and password</span> to auto-sign in!
           </p>
         </div>
 
@@ -112,7 +134,6 @@ export function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="block w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 pl-9 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-                required
               />
               <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               <button

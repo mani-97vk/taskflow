@@ -28,7 +28,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || (typeof window !== "undefined" && window.location.port !== "5173" ? window.location.origin : "http://localhost:5000");
     const socketInstance = io(SOCKET_URL, {
       auth: { token },
       withCredentials: true,
@@ -99,3 +99,4 @@ export function useSocket() {
   }
   return context;
 }
+

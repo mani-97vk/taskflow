@@ -10,6 +10,7 @@ export interface User {
   avatarUrl?: string;
   bio?: string;
   themePreference?: 'light' | 'dark' | 'system';
+  isAdmin?: boolean;
 }
 
 export interface Workspace {
@@ -183,3 +184,4 @@ export interface DashboardOverview {
   projectsWithProgress: { id: string; name: string; key: string; total: number; done: number; progress: number }[];
   upcomingDeadlines: Task[];
 }
+

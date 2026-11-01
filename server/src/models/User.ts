@@ -7,6 +7,7 @@ export interface IUser extends Document {
   avatarUrl?: string;
   bio?: string;
   themePreference: 'light' | 'dark' | 'system';
+  isAdmin: boolean;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
   lastLogin?: Date;
@@ -22,6 +23,7 @@ const UserSchema = new Schema<IUser>(
     avatarUrl: { type: String, default: '' },
     bio: { type: String, default: '', maxlength: 500 },
     themePreference: { type: String, enum: ['light', 'dark', 'system'], default: 'system' },
+    isAdmin: { type: Boolean, default: false },
     resetPasswordToken: { type: String, default: null, select: false },
     resetPasswordExpires: { type: Date, default: null, select: false },
     lastLogin: { type: Date, default: null },

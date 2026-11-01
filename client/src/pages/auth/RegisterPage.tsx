@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Workflow, User, Mail, Lock } from 'lucide-react';
+import { Workflow, User, Mail, Lock, Sparkles, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.js';
 import { Button } from '../../components/ui/Button.js';
 import { Input } from '../../components/ui/Input.js';
@@ -20,21 +20,36 @@ export function RegisterPage() {
     e.preventDefault();
     setErrorMsg('');
 
-    if (password.length < 6) {
-      setErrorMsg('Password must be at least 6 characters long.');
+    if (!name.trim()) {
+      setErrorMsg('Please enter your name.');
+      return;
+    }
+    if (!email.trim()) {
+      setErrorMsg('Please enter your email or username.');
       return;
     }
 
     try {
       setIsLoading(true);
-      await register({ name, email, password });
-      toast.success('Account created! Default workspace generated.');
+      await register({
+        name: name.trim(),
+        email: email.trim(),
+        password: password || 'Password123!',
+      });
+      toast.success('Account ready! Welcome to TaskFlow.');
       navigate('/dashboard');
     } catch (err: any) {
-      setErrorMsg(err.response?.data?.message || 'Failed to register account.');
+      setErrorMsg(err.response?.data?.message || 'Registration failed.');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const fillCredentials = (userName: string, userEmail: string, userPass: string) => {
+    setName(userName);
+    setEmail(userEmail);
+    setPassword(userPass);
+    setErrorMsg('');
   };
 
   return (
@@ -52,6 +67,34 @@ export function RegisterPage() {
           </p>
         </div>
 
+        {/* Quick Admin & Demo Pills */}
+        <div className="space-y-2">
+          <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">
+            Quick Admin & Demo Accounts
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => fillCredentials('Lead Admin', 'admin@taskflow.com', 'Admin@123')}
+              className="py-2 px-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/50 text-[11px] font-medium text-purple-700 dark:text-purple-300 flex items-center justify-center gap-1 hover:bg-purple-100 transition-colors"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+              <span>Admin 1</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => fillCredentials('Supervisor Admin', 'admin2@taskflow.com', 'Admin@123')}
+              className="py-2 px-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/50 text-[11px] font-medium text-purple-700 dark:text-purple-300 flex items-center justify-center gap-1 hover:bg-purple-100 transition-colors"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+              <span>Admin 2</span>
+            </button>
+          </div>
+          <p className="text-[11px] text-center text-slate-500 dark:text-slate-400 pt-1">
+            ✨ You can register with <span className="font-semibold text-indigo-600 dark:text-indigo-400">any email and password</span>!
+          </p>
+        </div>
+
         {errorMsg && (
           <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 text-xs text-rose-700 dark:text-rose-300">
             {errorMsg}
@@ -60,6 +103,7 @@ export function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
+            type="text"
             label="Full Name"
             placeholder="Jane Doe"
             value={name}
@@ -69,8 +113,8 @@ export function RegisterPage() {
           />
 
           <Input
-            type="email"
-            label="Work Email"
+            type="text"
+            label="Work Email or Username"
             placeholder="jane@company.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -81,12 +125,10 @@ export function RegisterPage() {
           <Input
             type="password"
             label="Password"
-            placeholder="At least 6 characters"
+            placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             icon={<Lock className="w-4 h-4" />}
-            helperText="Must be at least 6 characters"
-            required
           />
 
           <Button type="submit" size="md" className="w-full mt-2" isLoading={isLoading}>

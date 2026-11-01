@@ -136,6 +136,7 @@ export const notificationsApi = {
 
 // Activity API
 export const activityApi = {
+  getAdminPlatformOverview: () => apiClient.get('/activity/admin/overview').then((res) => res.data.data),
   getWorkspaceActivity: (workspaceId: string, limit?: number) =>
     apiClient.get(`/activity/workspace/${workspaceId}`, { params: { limit } }).then((res) => res.data.data as ActivityLog[]),
   getProjectActivity: (projectId: string, limit?: number) =>
@@ -163,3 +164,5 @@ export const reportsApi = {
     return `${base}/reports/export?workspaceId=${workspaceId}${projectId ? `&projectId=${projectId}` : ''}`;
   },
 };
+
+
